@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import { auth } from "./firebase-config.js";
+import { useAuthState } from "react-firebase-hooks/auth";
+import * as dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ru";
+import TodoForm from "./components/TodoForm";
+import Login from "./pages/Login";
+import Main from "./pages/Main";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [user] = useAuthState(auth);
+  console.log(user);
+  return <div className="App">{user ? <Main /> : <Login />}</div>;
 }
 
 export default App;
