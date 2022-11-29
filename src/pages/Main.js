@@ -5,18 +5,20 @@ import {
   query,
   orderBy,
   onSnapshot,
-  addDoc,
-  serverTimestamp,
   deleteDoc,
   doc,
   updateDoc,
-  where,
 } from "firebase/firestore";
-import { db } from "../firebase-config.js";
+import { db, auth } from "../firebase-config.js";
 import TodoItemsList from "../components/TodoItemsList";
 
 const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
 
+/**
+ *
+ * @describe Основная страница, которая возвращает кнопку выхода из учетной записи,
+ * форму создания записи TodoForm, а также непосредственно список карточек-записей TodoItemList
+ */
 const Main = () => {
   const [todos, setTodos] = useState([]);
   useEffect(() => {
@@ -30,7 +32,6 @@ const Main = () => {
     });
   }, []);
   const handleDelete = (id) => {
-    // setTodos(todos.filter((item) => item.id !== id));
     deleteDoc(doc(db, "todos", id));
   };
   const handleDone = async (id) => {
@@ -38,16 +39,23 @@ const Main = () => {
       done: !(await db.collection("todos").doc(id).get()).data().done,
     });
   };
-  console.log(todos);
+  const handleLogout = () => {
+    auth.signOut();
+  };
   return (
-    <div>
+    <>
+      <div className="logout-button-wrapper">
+        <button className="logout-button" onClick={handleLogout}>
+          <span>Выйти</span>
+        </button>
+      </div>
       <TodoForm />
       <TodoItemsList
         todoItems={todos}
         handleDelete={handleDelete}
         handleDone={handleDone}
       />
-    </div>
+    </>
   );
 };
 

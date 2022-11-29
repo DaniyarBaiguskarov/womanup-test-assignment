@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
-import * as dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/ru";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { storage } from "../firebase-config.js";
 import { db } from "../firebase-config.js";
 
-dayjs.extend(relativeTime);
-dayjs.locale("ru");
+/**
+ *
+ * @describe форма составления записи. Создаем состояние file для хранения и отправки на сервер
+ * загруженных файлов. Из массива file получаем имена файлов для соответсвующего поля записи. Ссылки получаем
+ * во время отправки файлов на сервер при помощи функции getDownloadUrl()
+ *
+ *
+ */
 
 const TodoForm = () => {
   const [title, setTitle] = useState("");
@@ -77,32 +73,41 @@ const TodoForm = () => {
     setFileNames(fileNames.filter((item) => item !== choosenFile));
   };
   return (
-    <form onSubmit={(e) => handleSubmit(e)}>
-      <fieldset disabled={disabled}>
+    <form className="todo-form" onSubmit={(e) => handleSubmit(e)}>
+      <fieldset className="todo-fieldset" disabled={disabled}>
+        <div className="todo-first-row-wrapper">
+          <input
+            className="todo-title"
+            type="text"
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            placeholder="Заголовок..."
+            required
+          />
+          <input
+            className="todo-date"
+            type="datetime-local"
+            onInput={(e) => {
+              console.log(e.target.value);
+              setDate(e.target.value);
+            }}
+            required
+            value={date}
+          />
+          <input className="todo-submit" type="submit" value={"Добавить"} />
+        </div>
+
         <input
-          type="text"
-          onChange={(e) => setTitle(e.target.value)}
-          value={title}
-          placeholder="Описание..."
-        />
-        <input
+          className="todo-description"
           type="text"
           onChange={(e) => setDescription(e.target.value)}
           value={desription}
-          placeholder="Заголовок..."
+          placeholder="Описание..."
+          required
         />
 
-        <input
-          type="datetime-local"
-          onInput={(e) => {
-            console.log(e.target.value);
-            setDate(e.target.value);
-          }}
-          value={date}
-        />
-        <input type="submit" />
-        <div>
-          <div>
+        <div className="file-area">
+          <div className="browse-wrapper">
             <input
               type="file"
               id="selectedFile"
@@ -113,22 +118,24 @@ const TodoForm = () => {
               }}
             />
             <input
+              className="browse-button"
               type="button"
               value="Browse..."
               onClick={() => document.getElementById("selectedFile").click()}
             />
           </div>
-          <div>
+          <div className="files-wrapper">
             {fileNames &&
               fileNames.map((item, index) => (
-                <div key={index} id="fileEl">
+                <div key={index} className="file-wrapper">
                   <span>{item}</span>
                   <div
+                    className="close"
                     onClick={(e) => {
                       deleteFile(item);
                     }}
                   >
-                    Удалить
+                    {/* <span>Удалить</span> */}
                   </div>
                 </div>
               ))}

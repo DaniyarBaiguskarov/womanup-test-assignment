@@ -1,12 +1,12 @@
 import React from "react";
 import Auth from "../components/Auth";
 
+/**
+ * @describe Страница аутентификации
+ */
+
 const Login = () => {
-  return (
-    <div>
-      <Auth />
-    </div>
-  );
+  return <Auth />;
 };
 
 export default Login;
